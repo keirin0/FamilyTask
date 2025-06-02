@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FamilyTasks - Сімейні завдання</title>
+    <style>
+:root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-gradient: linear-gradient(135deg, #434343 0%, #000000 100%);
+            
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --dark-glass-bg: rgba(0, 0, 0, 0.25);
+            --dark-glass-border: rgba(255, 255, 255, 0.1);
+            
+            --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --shadow-medium: 0 15px 35px rgba(31, 38, 135, 0.2);
+            --shadow-strong: 0 25px 50px rgba(31, 38, 135, 0.15);
+            
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --text-light: #a0aec0;
+            
+            --border-radius: 20px;
+            --border-radius-small: 12px;
+            --border-radius-large: 28px;
+            
+            --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text-primary);
+            font-weight: 400;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.05"><circle cx="30" cy="30" r="2"/></g></svg>');
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .auth-container {
+            max-width: 450px;
+            margin: 10vh auto;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 3rem;
+            border-radius: var(--border-radius-large);
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(255, 255, 255, 0.1) 90deg, transparent 180deg);
+            animation: rotate 20s linear infinite;
+            pointer-events: none;
+        }
+
+        .dashboard {
+            display: none;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-large);
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            font-size: 2.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        h2 {
+            font-size: 2rem;
+        }
+
+        h3 {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            letter-spacing: 0.025em;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius-small);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: var(--transition-smooth);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.6);
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-small);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-bounce);
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--dark-gradient);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-danger {
+            background: var(--danger-gradient);
+            box-shadow: 0 4px 15px rgba(250, 112, 154, 0.4);
+        }
+
+        .btn-small {
+            width: auto;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 2rem;
+            font-weight: 500;
+        }
+
+        .auth-switch a {
+            color: #667eea;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+            position: relative;
+            transition: var(--transition-smooth);
+        }
+
+        .auth-switch a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            background: var(--primary-gradient);
+            transition: var(--transition-smooth);
+            transform: translateX(-50%);
+        }
+
+        .auth-switch a:hover::after {
+            width: 100%;
+        }
+
+        .user-info {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-info::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: var(--primary-gradient);
+            border-radius: 0 10px 10px 0;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+            transition: var(--transition-bounce);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            display: block;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card span:last-child {
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.875rem;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border-radius: var(--border-radius);
+            padding: 0.5rem;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-radius: var(--border-radius-small);
+            transition: var(--transition-smooth);
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: var(--transition-smooth);
+            z-index: -1;
+        }
+
+        .tab.active::before {
+            opacity: 1;
+        }
+
+        .tab.active {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .task-card, .reward-card, .child-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            transition: var(--transition-bounce);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .task-card::before,
+        .reward-card::before,
+        .child-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .task-card:hover, .reward-card:hover, .child-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .task-completed {
+            background: var(--glass-bg);
+            border-color: rgba(67, 233, 123, 0.3);
+        }
+
+        .task-completed::before {
+            background: var(--warning-gradient);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .task-header h4 {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+        }
+
+        .points-badge {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .points-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shine 2s infinite;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(102, 126, 234, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 2.5rem;
+            border-radius: var(--border-radius-large);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-strong);
+            animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition-smooth);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .close:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .error {
+            color: #fa709a;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+            padding: 0.75rem;
+            background: rgba(250, 112, 154, 0.1);
+            border-radius: var(--border-radius-small);
+            border-left: 4px solid #fa709a;
+        }
+
+        .success {
+            color: #43e97b;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+            padding: 0.75rem;
+            background: rgba(67, 233, 123, 0.1);
+            border-radius: var(--border-radius-small);
+            border-left: 4px solid #43e97b;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Анімації */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        /* Адаптивність */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .auth-container {
+                margin: 5vh auto;
+                padding: 2rem;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                margin-bottom: 0.5rem;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .task-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            h1, h2 {
+                font-size: 2rem;
+            }
+            
+            .stat-number {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                padding: 1.5rem;
+                margin: 1rem;
+                width: calc(100% - 2rem);
+            }
+            
+            .task-card, .reward-card, .child-card {
+                padding: 1.5rem;
+            }
+            
+            h1, h2 {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* Темна тема для покращення контрасту */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --text-primary: #f7fafc;
+                --text-secondary: #e2e8f0;
+                --text-light: #cbd5e0;
+                --glass-bg: rgba(0, 0, 0, 0.3);
+                --glass-border: rgba(255, 255, 255, 0.1);
+            }
+            
+            input, select, textarea {
+                background: rgba(0, 0, 0, 0.2);
+                color: var(--text-primary);
+            }
+            
+            input:focus, select:focus, textarea:focus {
+                background: rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        /* Додаткові ефекти для покращення UX */
+        .btn:focus-visible {
+            outline: 2px solid rgba(102, 126, 234, 0.5);
+            outline-offset: 2px;
+        }
+
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 2px solid rgba(102, 126, 234, 0.5);
+            outline-offset: 2px;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Selection colors */
+        ::selection {
+            background: rgba(102, 126, 234, 0.3);
+            color: var(--text-primary);
+        }
+
+        ::-moz-selection {
+            background: rgba(102, 126, 234, 0.3);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Форма входу -->
+    <div id="loginForm" class="auth-container">
+        <h1>🏠 FamilyTasks</h1>
+        <h2>Вхід до системи</h2>
+        <form id="loginFormElement">
+            <div class="form-group">
+                <label for="loginUsername">Ім'я користувача:</label>
+                <input type="text" id="loginUsername" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Пароль:</label>
+                <input type="password" id="loginPassword" required>
+            </div>
+            <button type="submit" class="btn">Увійти</button>
+            <div id="loginError" class="error"></div>
+        </form>
+        <div class="auth-switch">
+            <p>Немає акаунту? <a onclick="showRegisterForm()">Зареєструватися як батько</a></p>
+        </div>
+    </div>
+
+    <!-- Форма реєстрації (тільки для батьків) -->
+    <div id="registerForm" class="auth-container hidden">
+        <h1>🏠 FamilyTasks</h1>
+        <h2>Реєстрація батька</h2>
+        <form id="registerFormElement">
+            <div class="form-group">
+                <label for="registerUsername">Ім'я користувача:</label>
+                <input type="text" id="registerUsername" required>
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">Пароль:</label>
+                <input type="password" id="registerPassword" required>
+            </div>
+            <button type="submit" class="btn">Зареєструватися</button>
+            <div id="registerError" class="error"></div>
+        </form>
+        <div class="auth-switch">
+            <p>Вже є акаунт? <a onclick="showLoginForm()">Увійти</a></p>
+        </div>
+    </div>
+
+    <!-- Дашборд батька -->
+    <div id="parentDashboard" class="container dashboard">
+        <div class="user-info">
+            <div>
+                <h2>👨‍👩‍👧‍👦 Батьківський дашборд</h2>
+                <p>Вітаємо, <span id="parentName"></span>!</p>
+            </div>
+            <button onclick="logout()" class="btn btn-secondary btn-small">Вийти</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <span class="stat-number" id="totalChildren">0</span>
+                <span>Дітей</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="totalTasks">0</span>
+                <span>Завдань</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="totalRewards">0</span>
+                <span>Нагород</span>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('children')">👶 Діти</div>
+            <div class="tab" onclick="switchTab('tasks')">📋 Завдання</div>
+            <div class="tab" onclick="switchTab('rewards')">🎁 Нагороди</div>
+        </div>
+
+        <!-- Вкладка "Діти" -->
+        <div id="childrenTab" class="tab-content active">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>Мої діти</h3>
+                <button onclick="showAddChildModal()" class="btn btn-success btn-small">+ Додати дитину</button>
+            </div>
+            <div id="childrenList"></div>
+        </div>
+
+        <!-- Вкладка "Завдання" -->
+        <div id="tasksTab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>Завдання</h3>
+                <button onclick="showAddTaskModal()" class="btn btn-success btn-small">+ Створити завдання</button>
+            </div>
+            <div id="tasksList"></div>
+        </div>
+
+        <!-- Вкладка "Нагороди" -->
+        <div id="rewardsTab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>Нагороди</h3>
+                <button onclick="showAddRewardModal()" class="btn btn-success btn-small">+ Створити нагороду</button>
+            </div>
+            <div id="rewardsList"></div>
+        </div>
+    </div>
+
+    <!-- Дашборд дитини -->
+    <div id="childDashboard" class="container dashboard">
+        <div class="user-info">
+            <div>
+                <h2>🧒 Дитячий дашборд</h2>
+                <p>Привіт, <span id="childName"></span>!</p>
+            </div>
+            <div>
+                <div class="points-badge" style="font-size: 16px; padding: 10px 20px;">
+                    Бали: <span id="childPoints">0</span>
+                </div>
+                <button onclick="logout()" class="btn btn-secondary btn-small" style="margin-left: 10px;">Вийти</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchChildTab('myTasks')">📋 Мої завдання</div>
+            <div class="tab" onclick="switchChildTab('myRewards')">🎁 Мої нагороди</div>
+        </div>
+
+        <!-- Завдання дитини -->
+        <div id="myTasksTab" class="tab-content active">
+            <h3>Мої завдання</h3>
+            <div id="childTasksList"></div>
+        </div>
+
+        <!-- Нагороди дитини -->
+        <div id="myRewardsTab" class="tab-content">
+            <h3>Мої нагороди</h3>
+            <div id="childRewardsList"></div>
+        </div>
+    </div>
+
+    <!-- Модальне вікно для додавання дитини -->
+    <div id="addChildModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addChildModal')">&times;</span>
+            <h3>Додати дитину</h3>
+            <form id="addChildForm">
+                <div class="form-group">
+                    <label for="childUsername">Ім'я користувача:</label>
+                    <input type="text" id="childUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="childPassword">Пароль:</label>
+                    <input type="password" id="childPassword" required>
+                </div>
+                <button type="submit" class="btn">Додати дитину</button>
+                <div id="addChildError" class="error"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальне вікно для створення завдання -->
+    <div id="addTaskModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addTaskModal')">&times;</span>
+            <h3>Створити завдання</h3>
+            <form id="addTaskForm">
+                <div class="form-group">
+                    <label for="taskTitle">Назва завдання:</label>
+                    <input type="text" id="taskTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="taskDescription">Опис:</label>
+                    <textarea id="taskDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="taskChild">Дитина:</label>
+                    <select id="taskChild" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="taskPoints">Бали за виконання:</label>
+                    <input type="number" id="taskPoints" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="taskDueDate">Дата виконання:</label>
+                    <input type="date" id="taskDueDate">
+                </div>
+                <button type="submit" class="btn">Створити завдання</button>
+                <div id="addTaskError" class="error"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальне вікно для створення нагороди -->
+    <div id="addRewardModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addRewardModal')">&times;</span>
+            <h3>Створити нагороду</h3>
+            <form id="addRewardForm">
+                <div class="form-group">
+                    <label for="rewardName">Назва нагороди:</label>
+                    <input type="text" id="rewardName" required>
+                </div>
+                <div class="form-group">
+                    <label for="rewardChild">Дитина:</label>
+                    <select id="rewardChild" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="rewardPoints">Необхідно балів:</label>
+                    <input type="number" id="rewardPoints" min="1" required>
+                </div>
+                <button type="submit" class="btn">Створити нагороду</button>
+                <div id="addRewardError" class="error"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+      // Глобальні змінні
+let currentUser = null;
+let sessionData = null; // Для збереження сесії
+const API_BASE = 'http://localhost:3000/api';
+
+// Функції для перемикання форм
+function showLoginForm() {
+    document.getElementById('loginForm').classList.remove('hidden');
+    document.getElementById('registerForm').classList.add('hidden');
+}
+
+function showRegisterForm() {
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('registerForm').classList.remove('hidden');
+}
+
+// Функції для API запитів
+async function apiRequest(url, options = {}) {
+    try {
+        const response = await fetch(`${API_BASE}${url}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            },
+            ...options
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Помилка запиту');
+        }
+        
+        return data;
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+    }
+}
+
+// Функція для збереження сесії
+function saveSession(user, credentials) {
+    currentUser = user;
+    sessionData = {
+        user: user,
+        credentials: credentials,
+        timestamp: Date.now()
+    };
+    // Додаємо цей рядок:
+    localStorage.setItem('familyTasksSession', JSON.stringify(sessionData));
+}
+
+// Функція для відновлення сесії
+async function restoreSession() {
+     const savedSession = localStorage.getItem('familyTasksSession');
+    if (savedSession) {
+        sessionData = JSON.parse(savedSession);
+    }
+    
+    if (!sessionData) return false;
+    
+    // Перевіряємо, чи не застара сесія (наприклад, 24 години)
+    const maxAge = 24 * 60 * 60 * 1000; // 24 години в мілісекундах
+    if (Date.now() - sessionData.timestamp > maxAge) {
+        sessionData = null;
+        return false;
+    }
+    
+    try {
+        // Спробуємо відновити сесію через повторний логін
+        const response = await apiRequest('/users/login', {
+            method: 'POST',
+            body: JSON.stringify(sessionData.credentials)
+        });
+        
+        currentUser = response.user;
+        sessionData.user = response.user;
+        sessionData.timestamp = Date.now();
+        
+        if (currentUser.role === 'parent') {
+            showParentDashboard();
+        } else {
+            showChildDashboard();
+        }
+        return true;
+    } catch (error) {
+        console.error('Помилка відновлення сесії:', error);
+        sessionData = null;
+        return false;
+    }
+}
+
+// Функція для оновлення даних користувача
+async function refreshUserData() {
+    if (!sessionData || !sessionData.credentials) return;
+    
+    try {
+        const response = await apiRequest('/users/login', {
+            method: 'POST',
+            body: JSON.stringify(sessionData.credentials)
+        });
+        
+        currentUser = response.user;
+        sessionData.user = response.user;
+        
+        // Оновлюємо відображення балів
+        if (currentUser.role === 'child') {
+            document.getElementById('childPoints').textContent = currentUser.total_points || 0;
+        }
+        
+    } catch (error) {
+        console.error('Помилка оновлення даних користувача:', error);
+    }
+}
+
+// Обробники форм
+document.getElementById('loginFormElement').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    try {
+        const response = await apiRequest('/users/login', {
+            method: 'POST',
+            body: JSON.stringify({ username, password })
+        });
+        
+        // Зберігаємо сесію
+        saveSession(response.user, { username, password });
+        
+        document.getElementById('loginError').textContent = '';
+        
+        if (currentUser.role === 'parent') {
+            showParentDashboard();
+        } else {
+            showChildDashboard();
+        }
+    } catch (error) {
+        document.getElementById('loginError').textContent = error.message;
+    }
+});
+
+document.getElementById('registerFormElement').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('registerUsername').value;
+    const password = document.getElementById('registerPassword').value;
+    
+    try {
+        await apiRequest('/users/register', {
+            method: 'POST',
+            body: JSON.stringify({ 
+                username, 
+                password, 
+                role: 'parent',
+                parent_id: null 
+            })
+        });
+        
+        document.getElementById('registerError').textContent = '';
+        showSuccess('registerError', 'Реєстрація успішна! Тепер ви можете увійти в систему.');
+        showLoginForm();
+    } catch (error) {
+        document.getElementById('registerError').textContent = error.message;
+    }
+});
+
+// Функції дашборду
+function showParentDashboard() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('childDashboard').style.display = 'none';
+    document.getElementById('parentDashboard').style.display = 'block';
+    
+    document.getElementById('parentName').textContent = currentUser.username;
+    loadParentData();
+}
+
+function showChildDashboard() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('parentDashboard').style.display = 'none';
+    document.getElementById('childDashboard').style.display = 'block';
+    
+    document.getElementById('childName').textContent = currentUser.username;
+    document.getElementById('childPoints').textContent = currentUser.total_points || 0;
+    loadChildData();
+}
+
+async function loadParentData() {
+    try {
+        // Завантажуємо дітей
+        const children = await apiRequest(`/users/children?parent_id=${currentUser.id}`);
+        displayChildren(children);
+        populateChildrenSelects(children);
+        
+        // Завантажуємо статистику
+        document.getElementById('totalChildren').textContent = children.length;
+        
+        // Завантажуємо нагороди
+        const rewards = await apiRequest(`/rewards/parent?parent_id=${currentUser.id}`);
+        displayRewards(rewards);
+        document.getElementById('totalRewards').textContent = rewards.length;
+        
+        // Завантажуємо завдання
+        await loadTasksForParent();
+        
+    } catch (error) {
+        console.error('Помилка завантаження даних батька:', error);
+    }
+}
+
+async function loadChildData() {
+    try {
+        // Завантажуємо завдання дитини
+        const tasks = await apiRequest(`/tasks/tasks?child_id=${currentUser.id}`);
+        displayChildTasks(tasks);
+        
+        // Завантажуємо нагороди дитини
+        const rewards = await apiRequest(`/rewards?child_id=${currentUser.id}`);
+        displayChildRewards(rewards);
+        
+    } catch (error) {
+        console.error('Помилка завантаження даних дитини:', error);
+    }
+}
+
+function displayChildren(children) {
+    const container = document.getElementById('childrenList');
+    container.innerHTML = '';
+    
+    children.forEach(child => {
+        const childCard = document.createElement('div');
+        childCard.className = 'child-card';
+        childCard.innerHTML = `
+            <div class="task-header">
+                <h4>${child.username}</h4>
+                <div class="points-badge">Бали: ${child.total_points || 0}</div>
+            </div>
+            <p>ID: ${child.id}</p>
+        `;
+        container.appendChild(childCard);
+    });
+}
+
+function displayRewards(rewards) {
+    const container = document.getElementById('rewardsList');
+    container.innerHTML = '';
+    
+    rewards.forEach(reward => {
+        const rewardCard = document.createElement('div');
+        rewardCard.className = 'reward-card';
+        rewardCard.innerHTML = `
+            <div class="task-header">
+                <h4>${reward.reward_name}</h4>
+                <div class="points-badge">${reward.points_required} балів</div>
+            </div>
+            <p>Дитина: ${reward.child_name}</p>
+            <p>Статус: ${reward.claimed ? '✅ Отримано' : '⏳ Очікує'}</p>
+        `;
+        container.appendChild(rewardCard);
+    });
+}
+
+function displayChildTasks(tasks) {
+    const container = document.getElementById('childTasksList');
+    container.innerHTML = '';
+    
+    tasks.forEach(task => {
+        const taskCard = document.createElement('div');
+        taskCard.className = `task-card ${task.completed ? 'task-completed' : ''}`;
+        taskCard.innerHTML = `
+            <div class="task-header">
+                <h4>${task.title}</h4>
+                <div class="points-badge">${task.points} балів</div>
+            </div>
+            <p>${task.description || 'Без опису'}</p>
+            ${task.due_date ? `<p><strong>Виконати до:</strong> ${formatDate(task.due_date)}</p>` : ''}
+            <p><strong>Статус:</strong> ${getTaskStatus(task)}</p>
+            ${!task.completed ? `<button onclick="completeTask(${task.id})" class="btn btn-success btn-small">Виконати</button>` : ''}
+        `;
+        container.appendChild(taskCard);
+    });
+}
+
+function displayChildRewards(rewards) {
+    const container = document.getElementById('childRewardsList');
+    container.innerHTML = '';
+    
+    rewards.forEach(reward => {
+        const rewardCard = document.createElement('div');
+        rewardCard.className = 'reward-card';
+        const canClaim = currentUser.total_points >= reward.points_required && !reward.claimed;
+        
+        rewardCard.innerHTML = `
+            <div class="task-header">
+                <h4>${reward.reward_name}</h4>
+                <div class="points-badge">${reward.points_required} балів</div>
+            </div>
+            <p><strong>Статус:</strong> ${reward.claimed ? '✅ Отримано' : (canClaim ? '🎁 Можна отримати' : '⏳ Недостатньо балів')}</p>
+            ${canClaim ? `<button onclick="claimReward(${reward.id})" class="btn btn-success btn-small">Отримати нагороду</button>` : ''}
+        `;
+        container.appendChild(rewardCard);
+    });
+}
+
+function populateChildrenSelects(children) {
+    const selects = ['taskChild', 'rewardChild'];
+    selects.forEach(selectId => {
+        const select = document.getElementById(selectId);
+        select.innerHTML = '<option value="">Оберіть дитину</option>';
+        children.forEach(child => {
+            select.innerHTML += `<option value="${child.id}">${child.username}</option>`;
+        });
+    });
+}
+
+// Функції для завдань
+async function completeTask(taskId) {
+    try {
+        await apiRequest(`/tasks/tasks/${taskId}/complete`, {
+            method: 'PUT'
+        });
+        
+        showSuccess('childTasksList', 'Завдання виконано! Бали нараховано.');
+        
+        // Оновлюємо дані користувача
+        await refreshUserData();
+        
+        // Перезавантажуємо дані дитини
+        await loadChildData();
+        
+    } catch (error) {
+        showError('childTasksList', 'Помилка: ' + error.message);
+    }
+}
+
+async function claimReward(rewardId) {
+    try {
+        await apiRequest(`/rewards/${rewardId}/claim`, {
+            method: 'PUT'
+        });
+        
+        showSuccess('childRewardsList', 'Нагороду отримано!');
+        
+        // Оновлюємо дані користувача
+        await refreshUserData();
+        
+        // Перезавантажуємо дані дитини
+        await loadChildData();
+        
+    } catch (error) {
+        showError('childRewardsList', 'Помилка: ' + error.message);
+    }
+}
+
+// Модальні вікна
+function showAddChildModal() {
+    document.getElementById('addChildModal').style.display = 'block';
+}
+
+function showAddTaskModal() {
+    document.getElementById('addTaskModal').style.display = 'block';
+}
+
+function showAddRewardModal() {
+    document.getElementById('addRewardModal').style.display = 'block';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// Обробники модальних форм
+document.getElementById('addChildForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('childUsername').value;
+    const password = document.getElementById('childPassword').value;
+    
+    try {
+        await apiRequest('/users/register', {
+            method: 'POST',
+            body: JSON.stringify({
+                username,
+                password,
+                role: 'child',
+                parent_id: currentUser.id
+            })
+        });
+        
+        showSuccess('addChildError', 'Дитину додано успішно!');
+        closeModal('addChildModal');
+        await loadParentData(); // Оновлюємо дані без перезавантаження
+        document.getElementById('addChildForm').reset();
+        
+    } catch (error) {
+        showError('addChildError', error.message);
+    }
+});
+
+document.getElementById('addTaskForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = document.getElementById('taskTitle').value;
+    const description = document.getElementById('taskDescription').value;
+    const child_id = document.getElementById('taskChild').value;
+    const points = document.getElementById('taskPoints').value;
+    const due_date = document.getElementById('taskDueDate').value;
+    
+    try {
+        await apiRequest('/tasks/tasks', {
+            method: 'POST',
+            body: JSON.stringify({
+                title,
+                description,
+                child_id: parseInt(child_id),
+                parent_id: currentUser.id,
+                points: parseInt(points),
+                due_date
+            })
+        });
+        
+        showSuccess('addTaskError', 'Завдання створено успішно!');
+        closeModal('addTaskModal');
+        await loadParentData(); // Оновлюємо дані без перезавантаження
+        document.getElementById('addTaskForm').reset();
+        
+    } catch (error) {
+        showError('addTaskError', error.message);
+    }
+});
+
+document.getElementById('addRewardForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const reward_name = document.getElementById('rewardName').value;
+    const child_id = document.getElementById('rewardChild').value;
+    const points_required = document.getElementById('rewardPoints').value;
+    
+    try {
+        await apiRequest('/rewards', {
+            method: 'POST',
+            body: JSON.stringify({
+                reward_name,
+                child_id: parseInt(child_id),
+                points_required: parseInt(points_required)
+            })
+        });
+        
+        showSuccess('addRewardError', 'Нагороду створено успішно!');
+        closeModal('addRewardModal');
+        await loadParentData(); // Оновлюємо дані без перезавантаження
+        document.getElementById('addRewardForm').reset();
+        
+    } catch (error) {
+        showError('addRewardError', error.message);
+    }
+});
+
+// Функції для перемикання вкладок
+function switchTab(tabName) {
+    // Приховуємо всі вкладки
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Видаляємо активний клас з усіх кнопок
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Показуємо потрібну вкладку
+    document.getElementById(tabName + 'Tab').classList.add('active');
+    
+    // Активуємо потрібну кнопку
+    event.target.classList.add('active');
+    
+    // Завантажуємо дані для відповідної вкладки
+    if (tabName === 'tasks') {
+        loadTasksForParent();
+    }
+}
+
+function switchChildTab(tabName) {
+    // Приховуємо всі вкладки
+    document.querySelectorAll('#childDashboard .tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Видаляємо активний клас з усіх кнопок
+    document.querySelectorAll('#childDashboard .tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Показуємо потрібну вкладку
+    document.getElementById(tabName + 'Tab').classList.add('active');
+    
+    // Активуємо потрібну кнопку
+    event.target.classList.add('active');
+}
+
+// Завантаження завдань для батька
+async function loadTasksForParent() {
+    try {
+        const children = await apiRequest(`/users/children?parent_id=${currentUser.id}`);
+        const allTasks = [];
+        
+        // Завантажуємо завдання для кожної дитини
+        for (const child of children) {
+            const tasks = await apiRequest(`/tasks/tasks?child_id=${child.id}`);
+            tasks.forEach(task => {
+                task.child_name = child.username;
+            });
+            allTasks.push(...tasks);
+        }
+        
+        displayParentTasks(allTasks);
+        document.getElementById('totalTasks').textContent = allTasks.length;
+        
+    } catch (error) {
+        console.error('Помилка завантаження завдань:', error);
+    }
+}
+
+function displayParentTasks(tasks) {
+    const container = document.getElementById('tasksList');
+    container.innerHTML = '';
+    
+    if (tasks.length === 0) {
+        container.innerHTML = '<p>Немає завдань</p>';
+        return;
+    }
+    
+    tasks.forEach(task => {
+        const taskCard = document.createElement('div');
+        taskCard.className = `task-card ${task.completed ? 'task-completed' : ''}`;
+        taskCard.innerHTML = `
+            <div class="task-header">
+                <h4>${task.title}</h4>
+                <div class="points-badge">${task.points} балів</div>
+            </div>
+            <p><strong>Дитина:</strong> ${task.child_name}</p>
+            <p>${task.description || 'Без опису'}</p>
+            ${task.due_date ? `<p><strong>Виконати до:</strong> ${formatDate(task.due_date)}</p>` : ''}
+            <p><strong>Статус:</strong> ${getTaskStatus(task)}</p>
+        `;
+        container.appendChild(taskCard);
+    });
+}
+
+// Функція виходу з системи
+function logout() {
+    currentUser = null;
+    sessionData = null; // Очищуємо сесію
+
+    localStorage.removeItem('familyTasksSession');
+    
+    // Приховуємо всі дашборди
+    document.getElementById('parentDashboard').style.display = 'none';
+    document.getElementById('childDashboard').style.display = 'none';
+    
+    // Показуємо форму входу
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('loginForm').classList.remove('hidden');
+    document.getElementById('registerForm').classList.add('hidden');
+    
+    // Очищуємо форми
+    document.getElementById('loginFormElement').reset();
+    document.getElementById('registerFormElement').reset();
+    
+    // Очищуємо помилки
+    document.getElementById('loginError').textContent = '';
+    document.getElementById('registerError').textContent = '';
+}
+
+// Закриття модального вікна при кліку поза ним
+window.addEventListener('click', (e) => {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+});
+
+// Ініціалізація при завантаженні сторінки
+document.addEventListener('DOMContentLoaded', async () => {
+    // Спробуємо відновити сесію
+    const sessionRestored = await restoreSession();
+    
+    if (!sessionRestored) {
+        // Якщо сесію не вдалося відновити, показуємо форму входу
+        showLoginForm();
+    } else {
+        // Якщо сесію вдалося відновити, оновлюємо інтерфейс
+        if (currentUser.role === 'parent') {
+            showParentDashboard();
+        } else {
+            showChildDashboard();
+        }
+    }
+});
+
+// Додаткові функції для покращення UX
+function showSuccess(elementId, message) {
+    const element = document.getElementById(elementId);
+    element.className = 'success';
+    element.textContent = message;
+    setTimeout(() => {
+        element.textContent = '';
+        element.className = '';
+    }, 3000);
+}
+
+function showError(elementId, message) {
+    const element = document.getElementById(elementId);
+    element.className = 'error';
+    element.textContent = message;
+}
+
+// Функція для форматування дат
+function formatDate(dateString) {
+    if (!dateString) return 'Не вказано';
+    return new Date(dateString).toLocaleDateString('uk-UA');
+}
+
+// Функція для перевірки статусу завдання
+function getTaskStatus(task) {
+    if (task.completed) return '✅ Виконано';
+    if (task.due_date && new Date(task.due_date) < new Date()) return '⏰ Прострочено';
+    return '⏳ В роботі';
+}
+
+// Додаємо обробник для Enter в формах
+document.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+        const form = e.target.closest('form');
+        if (form) {
+            const submitButton = form.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.click();
+            }
+        }
+    }
+});
+
+// Автоматичне оновлення даних кожні 30 секунд (опціонально)
+setInterval(async () => {
+    if (currentUser && sessionData) {
+        await refreshUserData();
+    }
+}, 30000);
+    </script>
+</body>
+</html>
